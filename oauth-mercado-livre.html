@@ -1,41 +1,36 @@
 <!doctype html>
-<html lang="pt-BR">
-<head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="robots" content="noindex,nofollow,noarchive">
-<meta name="referrer" content="no-referrer">
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive"><meta name="referrer" content="no-referrer">
 <title>Autorização Mercado Livre | Naka Indica</title>
-<style>
-*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;background:#fff8ef;color:#173e3b;font:16px system-ui,-apple-system,Arial,sans-serif;padding:24px}
-main{max-width:560px;width:100%;background:white;border:1px solid #e9e1d8;border-radius:22px;padding:28px;box-shadow:0 8px 35px #173e3b12}h1{font-size:27px;margin:8px 0 15px}p{line-height:1.6}small{color:#56635f}code{word-break:break-all;display:block;background:#f3f5f3;padding:12px;border-radius:9px;font-size:13px}button{background:#173e3b;color:white;border:0;border-radius:10px;padding:13px 18px;font-weight:600;cursor:pointer}button:disabled{opacity:.5}
-</style>
+<style>body{margin:0;min-height:100vh;display:grid;place-items:center;padding:20px;background:#fff8ef;color:#173e3b;font:16px system-ui,-apple-system,Arial,sans-serif}main{max-width:550px;background:white;border:1px solid #e8ded1;padding:30px;border-radius:24px}h1{font-size:27px}p{line-height:1.6}button{border:0;background:#173e3b;color:white;border-radius:12px;font-weight:700;padding:14px 20px;font-size:16px}textarea{width:100%;box-sizing:border-box;min-height:90px;border-radius:9px;padding:12px}small{color:#596662}</style>
 <script>
-(function(){
- const params=new URLSearchParams(location.search);
- const code=params.get('code')||'';
- const state=params.get('state')||'';
- const error=params.get('error')||'';
- history.replaceState(null,'',location.pathname);
+(()=>{
+ const p=new URLSearchParams(location.search), code=p.get('code'), state=p.get('state'), error=p.get('error');
+ try{history.replaceState(null,'',location.pathname);}catch(e){}
  window.addEventListener('DOMContentLoaded',()=>{
-   const status=document.getElementById('status');
-   const details=document.getElementById('details');
-   if(error){status.textContent='A autorização não foi concluída.';details.textContent=error;return;}
-   if(!code){status.textContent='Esta página receberá o retorno da autorização do Mercado Livre.';details.textContent='Nenhum código de autorização recebido nesta visita.';return;}
-   status.textContent='Retorno de autorização recebido.';
-   details.textContent='Código de uso único recebido. Não envie este código a ninguém nem publique em arquivos ou registros do GitHub. O próximo passo é trocá-lo por tokens em um processo seguro.';
-   const b=document.getElementById('copy');b.hidden=false;
-   b.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(code);b.textContent='Código copiado com segurança';}catch(e){details.textContent+=' Não foi possível copiar automaticamente. Use um navegador compatível.';}});
-   if(state)document.getElementById('state').textContent='Identificador da autorização recebido: '+state+'. Confira com o valor enviado na solicitação.';
+  const status=document.getElementById('status'),desc=document.getElementById('desc'),button=document.getElementById('copy'),codefield=document.getElementById('code');
+  const expected=sessionStorage.getItem('nakaMlOauthState'), start=Number(sessionStorage.getItem('nakaMlOauthStarted')||0);
+  sessionStorage.removeItem('nakaMlOauthState');sessionStorage.removeItem('nakaMlOauthStarted');
+  if(error){status.textContent='Autorização não concluída.';desc.textContent='A plataforma retornou um erro ou a autorização foi cancelada.';return;}
+  if(!code){status.textContent='Nenhum código de autorização recebido.';desc.textContent='Abra a página de conexão e inicie a autorização.';return;}
+  if(!state||state!==expected||Date.now()-start>15*60*1000||Date.now()<start){
+   status.textContent='Não foi possível validar a autorização.';
+   desc.textContent='Por segurança, reinicie a conexão na página Naka Indica no mesmo navegador e na mesma aba. O código não será exibido.';return;
+  }
+  status.textContent='Autorização recebida com segurança.';
+  desc.textContent='Copie o código temporário e salve somente no Secret ML_AUTH_CODE do seu repositório privado no GitHub. Em seguida execute o workflow 03 - Conectar Mercado Livre (OAuth inicial). Não compartilhe o código nesta conversa.';
+  button.hidden=false;
+  button.addEventListener('click',async()=>{
+   try{await navigator.clipboard.writeText(code);button.textContent='Código copiado';}
+   catch(e){codefield.hidden=false;codefield.value=code;codefield.select();button.textContent='Selecione e copie o código acima';}
+  });
  });
 })();
-</script>
-</head>
-<body><main>
-<strong>Naka Indica</strong>
-<h1>Conexão com Mercado Livre</h1>
-<p id="status">Carregando resposta de autorização...</p>
-<p id="details"></p>
-<p id="state"><small>Esta página não envia códigos para serviços externos, não guarda tokens e não realiza solicitações à API.</small></p>
-<button id="copy" hidden type="button">Copiar código de autorização</button>
-<p><small>O código deve ser utilizado uma única vez em um processo seguro de troca de tokens. Nunca compartilhe códigos, tokens ou Client Secret em mensagens.</small></p>
+</script></head><body><main><strong>Naka Indica</strong>
+<h1>Retorno da autorização</h1>
+<p id="status">Conferindo resposta...</p><p id="desc"></p>
+<button id="copy" type="button" hidden>Copiar código temporário</button>
+<textarea id="code" readonly hidden aria-label="Código temporário"></textarea>
+<p><small>Esta página não envia códigos a outros serviços. Nenhum token de API é armazenado aqui. Evite capturas de tela contendo códigos.</small></p>
+<p><a href="conectar-mercado-livre.html">Reiniciar conexão</a></p>
 </main></body></html>
