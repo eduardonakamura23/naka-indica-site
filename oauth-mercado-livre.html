@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="referrer" content="no-referrer">
+<title>Autorização Mercado Livre | Naka Indica</title>
+<style>
+*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;background:#fff8ef;color:#173e3b;font:16px system-ui,-apple-system,Arial,sans-serif;padding:24px}
+main{max-width:560px;width:100%;background:white;border:1px solid #e9e1d8;border-radius:22px;padding:28px;box-shadow:0 8px 35px #173e3b12}h1{font-size:27px;margin:8px 0 15px}p{line-height:1.6}small{color:#56635f}code{word-break:break-all;display:block;background:#f3f5f3;padding:12px;border-radius:9px;font-size:13px}button{background:#173e3b;color:white;border:0;border-radius:10px;padding:13px 18px;font-weight:600;cursor:pointer}button:disabled{opacity:.5}
+</style>
+<script>
+(function(){
+ const params=new URLSearchParams(location.search);
+ const code=params.get('code')||'';
+ const state=params.get('state')||'';
+ const error=params.get('error')||'';
+ history.replaceState(null,'',location.pathname);
+ window.addEventListener('DOMContentLoaded',()=>{
+   const status=document.getElementById('status');
+   const details=document.getElementById('details');
+   if(error){status.textContent='A autorização não foi concluída.';details.textContent=error;return;}
+   if(!code){status.textContent='Esta página receberá o retorno da autorização do Mercado Livre.';details.textContent='Nenhum código de autorização recebido nesta visita.';return;}
+   status.textContent='Retorno de autorização recebido.';
+   details.textContent='Código de uso único recebido. Não envie este código a ninguém nem publique em arquivos ou registros do GitHub. O próximo passo é trocá-lo por tokens em um processo seguro.';
+   const b=document.getElementById('copy');b.hidden=false;
+   b.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(code);b.textContent='Código copiado com segurança';}catch(e){details.textContent+=' Não foi possível copiar automaticamente. Use um navegador compatível.';}});
+   if(state)document.getElementById('state').textContent='Identificador da autorização recebido: '+state+'. Confira com o valor enviado na solicitação.';
+ });
+})();
+</script>
+</head>
+<body><main>
+<strong>Naka Indica</strong>
+<h1>Conexão com Mercado Livre</h1>
+<p id="status">Carregando resposta de autorização...</p>
+<p id="details"></p>
+<p id="state"><small>Esta página não envia códigos para serviços externos, não guarda tokens e não realiza solicitações à API.</small></p>
+<button id="copy" hidden type="button">Copiar código de autorização</button>
+<p><small>O código deve ser utilizado uma única vez em um processo seguro de troca de tokens. Nunca compartilhe códigos, tokens ou Client Secret em mensagens.</small></p>
+</main></body></html>
