@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="no-referrer"><meta name="robots" content="noindex,nofollow">
+<title>Conectar Mercado Livre | Naka Indica</title>
+<style>body{margin:0;min-height:100vh;display:grid;place-items:center;padding:20px;background:#fff8ef;color:#173e3b;font:16px system-ui,-apple-system,Arial,sans-serif}main{max-width:550px;background:white;border:1px solid #e8ded1;padding:30px;border-radius:24px}h1{font-size:29px}p{line-height:1.6}button{border:0;background:#173e3b;color:white;border-radius:12px;font-weight:700;padding:14px 20px;font-size:16px}small{color:#596662}</style>
+<script>
+function authorize(){
+  const bytes=new Uint8Array(24);crypto.getRandomValues(bytes);
+  const state=Array.from(bytes).map(b=>b.toString(16).padStart(2,'0')).join('');
+  sessionStorage.setItem('nakaMlOauthState',state);
+  sessionStorage.setItem('nakaMlOauthStarted',String(Date.now()));
+  const url=new URL('https://auth.mercadolivre.com.br/authorization');
+  url.searchParams.set('response_type','code');
+  url.searchParams.set('client_id','1309252659249343');
+  url.searchParams.set('redirect_uri','https://eduardonakamura23.github.io/naka-indica-site/oauth-mercado-livre.html');
+  url.searchParams.set('state',state);
+  window.location.assign(url.toString());
+}
+</script></head>
+<body><main><strong>Naka Indica</strong><h1>Conectar ao Mercado Livre</h1>
+<p>Esta página inicia a autorização oficial para que a automação consulte os rankings e informações de produtos. Você autorizará o acesso diretamente no Mercado Livre.</p>
+<p>Use esta opção somente depois de configurar os Secrets <code>ML_APP_ID</code>, <code>ML_APP_SECRET</code> e <code>SECRET_ROTATOR_PAT</code> no GitHub, e preparar o workflow de conexão.</p>
+<button type="button" onclick="authorize()">Autorizar no Mercado Livre</button>
+<p><small>A Naka Indica não solicita sua senha. A autorização gera um código temporário, que deve ser tratado como segredo e cadastrado somente no GitHub Secrets.</small></p></main></body></html>
